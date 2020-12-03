@@ -5,6 +5,9 @@ const cors = require("cors")
 const app = express()
 const routes = express.Router()
 app.use("/api", routes)
+
+const database = "eshop"
+
 // const path = require("path")
 
 // console.log("che,in:", __dirname)
@@ -12,6 +15,7 @@ app.use("/api", routes)
 // body-parser
 routes.use(bodyParser.urlencoded({ extended: false }))
 routes.use(bodyParser.json())
+const jsonParser = bodyParser.json()
 
 //cors
 routes.use(cors())
@@ -22,10 +26,6 @@ routes.use(cors())
 // routes
 routes.get("/", (req, res) => {
   res.send("hello")
-})
-
-routes.get("/products", (req, res) => {
-  res.send("liste des produits")
 })
 
 // mongoDB client
@@ -42,12 +42,35 @@ client.connect((err) => {
   if (err) {
     throw Error(err)
   }
-  const collection = client.db("eshop").collection("products")
-  console.log("connected to db ok")
 
+  !err && console.log("connected to db ok")
+
+  const products = client.db(database).collection("products")
   // perform actions on the collection object
+  routes.get("/products", (req, res) => {
+    products
+      .find()
+      .toArray()
+      .then((error, results) => {
+        if (error) {
+          return res.send(error)
+        }
+        res.status(200).send({ results })
+      })
+      .catch((err) => res.send(err))
+  })
 
-  client.close()
+  routes.post("/products/add", jsonParser, (req, res) => {
+    products
+      .insertOne(req.body)
+      .then(() => {
+        return res.status(200).send("succes insert new doc")
+      })
+      .catch((err) => {
+        console.log(err)
+        res.send(err)
+      })
+  })
 })
 
 // server connect
