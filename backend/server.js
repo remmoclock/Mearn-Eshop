@@ -19,6 +19,7 @@ routes.use(cors())
 // serve stqtic files
 // routes.use(express.static(path.join(__dirname, "../frontend/public")))
 
+// routes
 routes.get("/", (req, res) => {
   res.send("hello")
 })
@@ -27,16 +28,29 @@ routes.get("/products", (req, res) => {
   res.send("liste des produits")
 })
 
+// mongoDB client
+const MongoClient = require("mongodb").MongoClient
+const uri =
+  "mongodb+srv://eshop:eshop@cluster-eshop.kkpzn.mongodb.net/eshop?retryWrites=true&w=majority"
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+
+// DB connect
+client.connect((err) => {
+  if (err) {
+    throw Error(err)
+  }
+  const collection = client.db("eshop").collection("products")
+  console.log("connected to db ok")
+
+  // perform actions on the collection object
+
+  client.close()
+})
+
+// server connect
 app.listen(port, () => {
   console.log(`Server up and running on http://localhost:${port}`)
 })
-
-/* 
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://remmo:<password>@cluster-eshop.kkpzn.mongodb.net/<dbname>?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  client.close();
-}); */
