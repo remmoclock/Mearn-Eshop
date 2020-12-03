@@ -1,25 +1,30 @@
 const port = 5000
 const express = require("express")
 const bodyParser = require("body-parser")
-const path = require("path")
 const cors = require("cors")
 const app = express()
+const routes = express.Router()
+app.use("/api", routes)
+// const path = require("path")
 
-console.log("che,in:", __dirname)
+// console.log("che,in:", __dirname)
 
 // body-parser
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+routes.use(bodyParser.urlencoded({ extended: false }))
+routes.use(bodyParser.json())
 
 //cors
-app.use(cors())
+routes.use(cors())
 
 // serve stqtic files
-// app.use(express.static(path.join(__dirname, "../frontend/public")))
+// routes.use(express.static(path.join(__dirname, "../frontend/public")))
 
-app.get("/", (req, res) => {
-  console.log("GET / index.htl ")
+routes.get("/", (req, res) => {
   res.send("hello")
+})
+
+routes.get("/products", (req, res) => {
+  res.send("liste des produits")
 })
 
 app.listen(port, () => {
